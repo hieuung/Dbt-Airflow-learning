@@ -7,18 +7,11 @@ an Airflow connection and injecting a variable into the dbt project.
 
 from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator
-from cosmos import DbtTaskGroup, ProjectConfig, ProfileConfig, ExecutionConfig
+from cosmos import DbtTaskGroup, ProjectConfig, ProfileConfig, ExecutionConfig, DbtDag
 
 # adjust for other database types
-from cosmos.profiles import PostgresUserPasswordProfileMapping
 from pendulum import datetime
 import os
-
-ENV = "dev"
-YOUR_NAME = "hieuung"
-CONNECTION_ID = "my_data_warehouse" if ENV == 'dev' else "my_data_warehouse"
-DB_NAME = "postgres"
-SCHEMA_NAME = "raw_layer"
 
 # The path to the dbt project
 DBT_PROJECT_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/dbt/hieu_dbt_project"
@@ -26,13 +19,12 @@ DBT_PROJECT_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/dbt/hieu_dbt_project"
 # in the virtual environment created in the Dockerfile
 DBT_EXECUTABLE_PATH = f"{os.environ['AIRFLOW_HOME']}/dbt_venv/bin/dbt"
 
+ENV = "dev"
+YOUR_NAME = "hieuung"
 profile_config = ProfileConfig(
-    profile_name="hieuung",
+    profile_name="hieu_dbt_project",
     target_name=ENV,
-    profile_mapping=PostgresUserPasswordProfileMapping(
-        conn_id=CONNECTION_ID,
-        profile_args={"schema": SCHEMA_NAME},
-    ),
+    profiles_yml_filepath=f"{os.environ['AIRFLOW_HOME']}/dags/dbt/profiles.yml"
 )
 
 dbt_args = {
@@ -58,7 +50,7 @@ trigger_args = {
     default_args= default_args,
     params=trigger_args,
 )
-def my_simple_dbt_dag():
+def my_dbt_dag():
     start = EmptyOperator(task_id = 'start')
 
     transform_data = DbtTaskGroup(
@@ -82,4 +74,4 @@ def my_simple_dbt_dag():
     start >> transform_data >> end
 
 
-my_simple_dbt_dag()
+my_dbt_dag()

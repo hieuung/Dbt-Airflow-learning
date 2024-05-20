@@ -1,0 +1,47 @@
+## POSTGRES ##
+## By default, edr expects the profile name 'elementary'.      ##
+## Configure the database and schema of elementary models.     ##
+## Check where 'elementary_test_results' is to find it.        ##
+
+---
+config:
+  send_anonymous_usage_stats: false
+hieu_dbt_project:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      threads: 4
+      host: postgres
+      port: 5432
+      user: airflow
+      pass: airflow
+      dbname: postgres
+      schema: raw_layer
+
+    prod:
+      type: postgres
+      threads: 4
+      host: postgres
+      port: 5432
+      user: airflow
+      pass: airflow
+      dbname: postgres
+      schema: raw_layer
+
+elementary:
+  outputs:
+    default:
+      type: postgres
+      host: postgres
+      user: airflow
+      password: airflow
+      port: 5432
+      dbname: postgres
+      schema: raw_layer_elementary
+      threads: 4
+      keepalives_idle: 0 # default 0 seconds
+      connect_timeout: 10 # default 10 seconds
+      # search_path: public # optional, not recommended
+      # role: [optional, set the role dbt assumes when executing queries]
+      # sslmode: [optional, set the sslmode used to connect to the database]
