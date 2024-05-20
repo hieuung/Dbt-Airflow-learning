@@ -1,0 +1,8 @@
+---
+version: 2
+models:
+  - name: stagging_eltool__customers
+    columns:
+      - name: customer_id
+        tests: [not_null]
+  - name: stagging_eltool__orders
